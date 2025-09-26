@@ -7,8 +7,8 @@ cache_dir = './.cache'
 requirements = []
 [contracts.stacks-token-streaming]
 path = 'contracts/stacks-token-streaming.clar'
-clarity_version = 3
-epoch = 3.1
+clarity_version = 2
+epoch = 2.1
 [repl.analysis]
 passes = ['check_checker']
 
