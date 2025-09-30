@@ -5,12 +5,6 @@ settings/
 deployments/
 Clarinet.toml
 
-# Ignore root package files (we only need frontend)
-package.json
-package-lock.json
-tsconfig.json
-vitest.config.js
-
 # Ignore development files
 .git/
 .gitignore
