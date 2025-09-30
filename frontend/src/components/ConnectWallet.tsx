@@ -3,6 +3,7 @@ import { showConnect, getUserSession } from '@stacks/connect'
 import { Wallet, ArrowRight, Copy, Check, AlertTriangle } from 'lucide-react'
 import { APP_CONFIG, CONTRACT_CONFIG, DEMO_WALLETS } from '../config'
 import { handleWalletError, getWalletTroubleshootingSteps, checkWalletAvailability } from '../utils/walletErrorHandler'
+import { WalletDiagnostic } from './WalletDiagnostic'
 
 interface ConnectWalletProps {
   onConnect: (session: any) => void
@@ -180,6 +181,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onConnect }) => {
         <div className="network-info">
           <p>Currently connected to: <strong>Stacks {CONTRACT_CONFIG.network.charAt(0).toUpperCase() + CONTRACT_CONFIG.network.slice(1)}</strong></p>
         </div>
+
+        <WalletDiagnostic />
       </div>
     </div>
   )
