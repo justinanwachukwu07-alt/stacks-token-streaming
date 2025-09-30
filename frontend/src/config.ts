@@ -26,6 +26,14 @@ export const CONTRACT_CONFIG = {
   network: import.meta.env.VITE_NETWORK || 'testnet',
 }
 
+// Demo wallet addresses for testing (from simnet configuration)
+export const DEMO_WALLETS = {
+  deployer: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
+  wallet1: 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5',
+  wallet2: 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG',
+  wallet3: 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC',
+}
+
 // UI configuration
 export const UI_CONFIG = {
   itemsPerPage: 10,
