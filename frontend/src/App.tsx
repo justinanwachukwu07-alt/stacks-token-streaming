@@ -4,11 +4,10 @@ import { ConnectWallet } from './components/ConnectWallet'
 import { Dashboard } from './components/Dashboard'
 import { CreateStream } from './components/CreateStream'
 import { Header } from './components/Header'
-import { CONTRACT_CONFIG } from './config'
 import './App.css'
 
 function App() {
-  const [userSession, setUserSession] = useState(null)
+  const [userSession, setUserSession] = useState<any>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [userAddress, setUserAddress] = useState('')
   const [activeTab, setActiveTab] = useState('dashboard')

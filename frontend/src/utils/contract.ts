@@ -1,4 +1,4 @@
-import { makeContractCall, fetchCallReadOnlyFunction, cvToValue } from '@stacks/transactions'
+import { makeContractCall, fetchCallReadOnlyFunction, cvToValue, stringUtf8CV, uintCV, tupleCV } from '@stacks/transactions'
 import { STACKS_TESTNET, STACKS_MAINNET } from '@stacks/network'
 import { CONTRACT_CONFIG } from '../config'
 
@@ -76,13 +76,13 @@ export const contractFunctions = {
     onCancel?: () => void
   ) => {
     const functionArgs = [
-      params.recipient,
-      contractUtils.stxToMicroStx(params.initialBalance),
-      {
-        'start-block': params.startBlock,
-        'stop-block': params.stopBlock
-      },
-      contractUtils.stxToMicroStx(params.paymentPerBlock)
+      stringUtf8CV(params.recipient),
+      uintCV(contractUtils.stxToMicroStx(params.initialBalance)),
+      tupleCV({
+        'start-block': uintCV(params.startBlock),
+        'stop-block': uintCV(params.stopBlock)
+      }),
+      uintCV(contractUtils.stxToMicroStx(params.paymentPerBlock))
     ]
 
     const options = {
@@ -112,7 +112,7 @@ export const contractFunctions = {
       contractAddress: CONTRACT_CONFIG.address,
       contractName: CONTRACT_CONFIG.name,
       functionName: 'refuel',
-      functionArgs: [streamId, contractUtils.stxToMicroStx(amount)],
+      functionArgs: [uintCV(streamId), uintCV(contractUtils.stxToMicroStx(amount))],
       network: getNetwork(),
       senderKey: userSession.loadUserData().appPrivateKey,
       fee: 10000,
@@ -134,7 +134,7 @@ export const contractFunctions = {
       contractAddress: CONTRACT_CONFIG.address,
       contractName: CONTRACT_CONFIG.name,
       functionName: 'withdraw',
-      functionArgs: [streamId],
+      functionArgs: [uintCV(streamId)],
       network: getNetwork(),
       senderKey: userSession.loadUserData().appPrivateKey,
       fee: 10000,
@@ -156,7 +156,7 @@ export const contractFunctions = {
       contractAddress: CONTRACT_CONFIG.address,
       contractName: CONTRACT_CONFIG.name,
       functionName: 'refund',
-      functionArgs: [streamId],
+      functionArgs: [uintCV(streamId)],
       network: getNetwork(),
       senderKey: userSession.loadUserData().appPrivateKey,
       fee: 10000,
@@ -174,7 +174,7 @@ export const contractFunctions = {
         contractAddress: CONTRACT_CONFIG.address,
         contractName: CONTRACT_CONFIG.name,
         functionName: 'get-stream',
-        functionArgs: [streamId],
+        functionArgs: [uintCV(streamId)],
         network: getNetwork(),
         senderAddress: userAddress,
       })
@@ -227,7 +227,7 @@ export const contractFunctions = {
         contractAddress: CONTRACT_CONFIG.address,
         contractName: CONTRACT_CONFIG.name,
         functionName: 'balance-of',
-        functionArgs: [streamId, userAddress],
+        functionArgs: [uintCV(streamId), stringUtf8CV(userAddress)],
         network: getNetwork(),
         senderAddress: userAddress,
       })
