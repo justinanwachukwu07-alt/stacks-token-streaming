@@ -1,7 +1,8 @@
 import React from 'react'
 import { showConnect, getUserSession } from '@stacks/connect'
-import { Wallet, ArrowRight, Copy, Check } from 'lucide-react'
+import { Wallet, ArrowRight, Copy, Check, AlertTriangle } from 'lucide-react'
 import { APP_CONFIG, CONTRACT_CONFIG, DEMO_WALLETS } from '../config'
+import { handleWalletError, getWalletTroubleshootingSteps, checkWalletAvailability } from '../utils/walletErrorHandler'
 
 interface ConnectWalletProps {
   onConnect: (session: any) => void
@@ -14,17 +15,52 @@ const appDetails = {
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onConnect }) => {
   const [copiedAddress, setCopiedAddress] = React.useState<string | null>(null)
+  const [walletError, setWalletError] = React.useState<string>('')
+  const [troubleshootingSteps, setTroubleshootingSteps] = React.useState<string[]>([])
+  const [availableWallets, setAvailableWallets] = React.useState<string[]>([])
 
-  const handleConnect = () => {
-    showConnect({
-      appDetails,
-      redirectTo: '/',
-      onFinish: (payload) => {
-        const { userSession } = payload
-        onConnect(userSession)
-      },
-      userSession: getUserSession(),
-    })
+  React.useEffect(() => {
+    // Check wallet availability on component mount
+    const { available, wallets } = checkWalletAvailability()
+    setAvailableWallets(wallets)
+    
+    if (!available) {
+      setWalletError('No Stacks wallet detected. Please install Leather, Xverse, or Hiro wallet.')
+      setTroubleshootingSteps(getWalletTroubleshootingSteps('UNKNOWN'))
+    }
+  }, [])
+
+  const handleConnect = async () => {
+    try {
+      setWalletError('')
+      setTroubleshootingSteps([])
+      
+      // Check if any wallet is available
+      if (typeof window === 'undefined') {
+        setWalletError('Wallet connection not available in this environment')
+        return
+      }
+
+      // Try to connect with error handling
+      await showConnect({
+        appDetails,
+        redirectTo: '/',
+        onFinish: (payload) => {
+          const { userSession } = payload
+          onConnect(userSession)
+        },
+        onCancel: () => {
+          const error = handleWalletError(new Error('User cancelled'))
+          setWalletError(error.message)
+          setTroubleshootingSteps(getWalletTroubleshootingSteps(error.type))
+        },
+        userSession: getUserSession(),
+      })
+    } catch (error: any) {
+      const walletError = handleWalletError(error)
+      setWalletError(walletError.message)
+      setTroubleshootingSteps(getWalletTroubleshootingSteps(walletError.type))
+    }
   }
 
   const copyToClipboard = async (address: string, label: string) => {
@@ -74,11 +110,34 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onConnect }) => {
           </div>
         </div>
 
+        {walletError && (
+          <div className="wallet-error">
+            <AlertTriangle size={16} />
+            <span>{walletError}</span>
+          </div>
+        )}
+
         <button className="connect-button" onClick={handleConnect}>
           <Wallet size={20} />
           Connect Wallet
           <ArrowRight size={20} />
         </button>
+
+        {(walletError || troubleshootingSteps.length > 0) && (
+          <div className="wallet-troubleshooting">
+            <h4>Troubleshooting Steps:</h4>
+            <ul>
+              {troubleshootingSteps.map((step, index) => (
+                <li key={index}>{step}</li>
+              ))}
+            </ul>
+            {availableWallets.length > 0 && (
+              <p className="detected-wallets">
+                <strong>Detected wallets:</strong> {availableWallets.join(', ')}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="demo-section">
           <h3>Demo Contract & Wallets</h3>

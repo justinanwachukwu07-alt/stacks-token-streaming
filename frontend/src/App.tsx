@@ -4,6 +4,7 @@ import { ConnectWallet } from './components/ConnectWallet'
 import { Dashboard } from './components/Dashboard'
 import { CreateStream } from './components/CreateStream'
 import { Header } from './components/Header'
+import { setupGlobalWalletErrorHandler } from './utils/walletErrorHandler'
 import './App.css'
 
 function App() {
@@ -13,6 +14,9 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
 
   useEffect(() => {
+    // Set up global wallet error handler
+    setupGlobalWalletErrorHandler()
+    
     // Check if user is already connected
     const session = getUserSession()
     if (session && session.isUserSignedIn()) {
