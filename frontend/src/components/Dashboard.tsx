@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { LayoutDashboard, Eye, RefreshCw } from 'lucide-react'
 import { StreamCard } from './StreamCard'
-import { contractFunctions, contractUtils } from '../utils/contract'
+import { contractFunctions } from '../utils/contract'
 import type { StreamData } from '../utils/contract'
 
 interface DashboardProps {
@@ -12,7 +12,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ userAddress, userSession }) => {
   const [streams, setStreams] = useState<StreamData[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [latestStreamId, setLatestStreamId] = useState(0)
+  const [, setLatestStreamId] = useState(0)
 
   const fetchAllStreams = async () => {
     setIsLoading(true)

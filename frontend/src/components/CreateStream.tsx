@@ -8,7 +8,7 @@ interface CreateStreamProps {
   userSession: any
 }
 
-export const CreateStream: React.FC<CreateStreamProps> = ({ userAddress, userSession }) => {
+export const CreateStream: React.FC<CreateStreamProps> = ({ userSession }) => {
   const [formData, setFormData] = useState({
     recipient: '',
     initialBalance: '',
