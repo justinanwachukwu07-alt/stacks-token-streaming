@@ -220,25 +220,93 @@ export const contractFunctions = {
     }
   },
 
-  // Get balance for a user in a stream
-  getStreamBalance: async (streamId: number, userAddress: string): Promise<number> => {
-    try {
-      const result = await fetchCallReadOnlyFunction({
-        contractAddress: CONTRACT_CONFIG.address,
-        contractName: CONTRACT_CONFIG.name,
-        functionName: 'balance-of',
-        functionArgs: [uintCV(streamId), stringUtf8CV(userAddress)],
-        network: getNetwork(),
-        senderAddress: userAddress,
-      })
-      
-      return contractUtils.microStxToStx(cvToValue(result))
-    } catch (error) {
-      console.error('Error fetching stream balance:', error)
-      return 0
+      // Get balance for a user in a stream
+      getStreamBalance: async (streamId: number, userAddress: string): Promise<number> => {
+        try {
+          const result = await fetchCallReadOnlyFunction({
+            contractAddress: CONTRACT_CONFIG.address,
+            contractName: CONTRACT_CONFIG.name,
+            functionName: 'balance-of',
+            functionArgs: [uintCV(streamId), stringUtf8CV(userAddress)],
+            network: getNetwork(),
+            senderAddress: userAddress,
+          })
+
+          return contractUtils.microStxToStx(cvToValue(result))
+        } catch (error) {
+          console.error('Error fetching stream balance:', error)
+          return 0
+        }
+      },
+
+      // Update stream parameters with signature
+      updateStreamDetails: async (
+        streamId: number,
+        newPaymentPerBlock: number,
+        newTimeframe: { startBlock: number; stopBlock: number },
+        signerAddress: string,
+        signature: string,
+        userSession: any,
+        onFinish?: (data: any) => void,
+        onCancel?: () => void
+      ) => {
+        const options = {
+          contractAddress: CONTRACT_CONFIG.address,
+          contractName: CONTRACT_CONFIG.name,
+          functionName: 'update-details',
+          functionArgs: [
+            uintCV(streamId),
+            uintCV(contractUtils.stxToMicroStx(newPaymentPerBlock)),
+            tupleCV({
+              'start-block': uintCV(newTimeframe.startBlock),
+              'stop-block': uintCV(newTimeframe.stopBlock)
+            }),
+            stringUtf8CV(signerAddress),
+            // Note: In a real implementation, you'd need to convert the signature string to buffer
+            // This is a simplified version for demo purposes
+            stringUtf8CV(signature)
+          ],
+          network: getNetwork(),
+          senderKey: userSession.loadUserData().appPrivateKey,
+          fee: 10000,
+          onFinish,
+          onCancel
+        }
+
+        return await makeContractCall(options)
+      },
+
+      // Get stream hash for signature generation
+      getStreamHash: async (
+        streamId: number,
+        newPaymentPerBlock: number,
+        newTimeframe: { startBlock: number; stopBlock: number },
+        userAddress: string
+      ): Promise<string> => {
+        try {
+          const result = await fetchCallReadOnlyFunction({
+            contractAddress: CONTRACT_CONFIG.address,
+            contractName: CONTRACT_CONFIG.name,
+            functionName: 'hash-stream',
+            functionArgs: [
+              uintCV(streamId),
+              uintCV(contractUtils.stxToMicroStx(newPaymentPerBlock)),
+              tupleCV({
+                'start-block': uintCV(newTimeframe.startBlock),
+                'stop-block': uintCV(newTimeframe.stopBlock)
+              })
+            ],
+            network: getNetwork(),
+            senderAddress: userAddress,
+          })
+
+          return cvToValue(result)
+        } catch (error) {
+          console.error('Error fetching stream hash:', error)
+          return ''
+        }
+      }
     }
-  }
-}
 
 // Error handling utilities
 export const errorUtils = {

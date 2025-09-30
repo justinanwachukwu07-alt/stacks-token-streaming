@@ -44,7 +44,7 @@ export const UI_CONFIG = {
 
 // Feature flags
 export const FEATURE_FLAGS = {
-  enableStreamUpdates: false, // Stream parameter updates with signatures
+  enableStreamUpdates: true,  // Stream parameter updates with signatures
   enableAnalytics: false,     // Stream analytics and reporting
   enableNotifications: false, // Push notifications for stream events
   enableMultiToken: false,    // Support for SIP-010 tokens

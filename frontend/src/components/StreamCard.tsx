@@ -11,6 +11,8 @@ import {
   ChevronUp
 } from 'lucide-react'
 import { contractFunctions, contractUtils } from '../utils/contract'
+import { UpdateStream } from './UpdateStream'
+import { FEATURE_FLAGS } from '../config'
 import type { StreamData } from '../utils/contract'
 
 interface StreamCardProps {
@@ -30,6 +32,7 @@ export const StreamCard: React.FC<StreamCardProps> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [availableBalance, setAvailableBalance] = useState(0)
   const [refuelAmount, setRefuelAmount] = useState('')
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
 
   const isSender = stream.sender === userAddress
   const isRecipient = stream.recipient === userAddress
@@ -232,15 +235,29 @@ export const StreamCard: React.FC<StreamCardProps> = ({
               </button>
             )}
 
-            <button 
-              className="action-button settings-button"
-              disabled={true} // TODO: Implement stream updates
-            >
-              <Settings size={16} />
-              Update Stream
-            </button>
+            {FEATURE_FLAGS.enableStreamUpdates && (isSender || isRecipient) && isActive && (
+              <button 
+                className="action-button update-button"
+                onClick={() => setShowUpdateModal(true)}
+                disabled={isLoading}
+              >
+                <Settings size={16} />
+                Update Stream
+              </button>
+            )}
+
           </div>
         </div>
+      )}
+
+      {showUpdateModal && (
+        <UpdateStream
+          stream={stream}
+          userAddress={userAddress}
+          userSession={userSession}
+          onStreamUpdate={onStreamUpdate}
+          onClose={() => setShowUpdateModal(false)}
+        />
       )}
     </div>
   )
