@@ -11,6 +11,9 @@ importers:
       '@stacks/connect':
         specifier: ^8.2.0
         version: 8.2.0(@types/react@19.1.16)(lit@3.3.0)(react@19.1.1)(typescript@5.8.3)(zod@3.22.4)
+      '@stacks/connect-react':
+        specifier: ^23.1.0
+        version: 23.1.0(@types/react@19.1.16)(lit@3.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.8.3)(zod@3.22.4)
       '@stacks/network':
         specifier: ^7.2.0
         version: 7.2.0
@@ -661,6 +664,12 @@ packages:
 
   '@stacks/common@7.0.2':
     resolution: {integrity: sha512-+RSecHdkxOtswmE4tDDoZlYEuULpnTQVeDIG5eZ32opK8cFxf4EugAcK9CsIsHx/Se1yTEaQ21WGATmJGK84lQ==}
+
+  '@stacks/connect-react@23.1.0':
+    resolution: {integrity: sha512-5TIJ2FjEKVRWYa9qI1pvNenj87RuCa0QfBEtgMcEi7P4cPGjn0tPPx5Yut2XD+REOV9zjypr8GjiwJylzChc9A==}
+    peerDependencies:
+      react: ^16.x || 17.x || 18.x
+      react-dom: ^16.x || 17.x || 18.x
 
   '@stacks/connect-ui@8.1.0':
     resolution: {integrity: sha512-5TXYasZUi8x3nSPao0k7AC/dwGwxUY4F4Y8w/bdT/XMFLD6bMYetI4w4Y5BBHCGv2eAP1fdJGc7l/J+I4yhZHg==}
@@ -3040,6 +3049,39 @@ snapshots:
       '@types/node': 18.19.128
 
   '@stacks/common@7.0.2': {}
+
+  '@stacks/connect-react@23.1.0(@types/react@19.1.16)(lit@3.3.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.8.3)(zod@3.22.4)':
+    dependencies:
+      '@stacks/connect': 8.2.0(@types/react@19.1.16)(lit@3.3.0)(react@19.1.1)(typescript@5.8.3)(zod@3.22.4)
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@react-native-async-storage/async-storage'
+      - '@types/react'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - aws4fetch
+      - bufferutil
+      - db0
+      - encoding
+      - ioredis
+      - lit
+      - typescript
+      - uploadthing
+      - utf-8-validate
+      - zod
 
   '@stacks/connect-ui@8.1.0':
     dependencies:

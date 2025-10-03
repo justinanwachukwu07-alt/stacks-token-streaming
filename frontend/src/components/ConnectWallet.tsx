@@ -1,7 +1,7 @@
 import React from 'react'
-import { showConnect, getUserSession } from '@stacks/connect'
+import { connect } from '@stacks/connect'
 import { Wallet, ArrowRight, Copy, Check, AlertTriangle } from 'lucide-react'
-import { APP_CONFIG, CONTRACT_CONFIG, DEMO_WALLETS } from '../config'
+import { CONTRACT_CONFIG } from '../config'
 import { handleWalletError, getWalletTroubleshootingSteps, checkWalletAvailability } from '../utils/walletErrorHandler'
 import { WalletDiagnostic } from './WalletDiagnostic'
 
@@ -9,10 +9,7 @@ interface ConnectWalletProps {
   onConnect: (session: any) => void
 }
 
-const appDetails = {
-  name: APP_CONFIG.name,
-  icon: window.location.origin + '/vite.svg',
-}
+// App details are provided via the Connect provider in main.tsx
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onConnect }) => {
   const [copiedAddress, setCopiedAddress] = React.useState<string | null>(null)
@@ -42,21 +39,23 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onConnect }) => {
         return
       }
 
-      // Try to connect with error handling
-      await showConnect({
-        appDetails,
-        redirectTo: '/',
-        onFinish: (payload) => {
-          const { userSession } = payload
-          onConnect(userSession)
-        },
-        onCancel: () => {
-          const error = handleWalletError(new Error('User cancelled'))
-          setWalletError(error.message)
-          setTroubleshootingSteps(getWalletTroubleshootingSteps(error.type))
-        },
-        userSession: getUserSession(),
-      })
+      // Trigger wallet connection using new API
+      await connect({ forceWalletSelect: true })
+      // After connect, construct a minimal session-like object to keep existing app flow
+      const session = {
+        isUserSignedIn: () => true,
+        loadUserData: () => ({
+          profile: {
+            stxAddress: {
+              testnet: (JSON.parse(localStorage.getItem('stacks-connect') || '{"addresses":[]}').addresses?.find((a: any) => a.address?.startsWith('ST') || a.address?.startsWith('SP'))?.address) || ''
+            }
+          }
+        }),
+        signUserOut: () => {
+          localStorage.removeItem('stacks-connect')
+        }
+      }
+      onConnect(session)
     } catch (error: any) {
       const walletError = handleWalletError(error)
       setWalletError(walletError.message)
@@ -141,7 +140,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onConnect }) => {
         )}
 
         <div className="demo-section">
-          <h3>Demo Contract & Wallets</h3>
+          <h3>Contract</h3>
           <div className="demo-info">
             <div className="demo-item">
               <label>Contract Address:</label>
@@ -155,25 +154,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onConnect }) => {
                   {copiedAddress === 'contract' ? <Check size={16} /> : <Copy size={16} />}
                 </button>
               </div>
-            </div>
-            
-            <div className="demo-wallets">
-              <label>Demo Wallets (for testing):</label>
-              {Object.entries(DEMO_WALLETS).map(([key, address]) => (
-                <div key={key} className="demo-item">
-                  <span className="wallet-label">{key}:</span>
-                  <div className="address-row">
-                    <code>{address}</code>
-                    <button 
-                      className="copy-btn"
-                      onClick={() => copyToClipboard(address, key)}
-                      title={`Copy ${key} address`}
-                    >
-                      {copiedAddress === key ? <Check size={16} /> : <Copy size={16} />}
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>

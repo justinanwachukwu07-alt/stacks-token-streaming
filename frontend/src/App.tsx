@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getUserSession } from '@stacks/connect'
+import { isConnected as stacksIsConnected } from '@stacks/connect'
 import { ConnectWallet } from './components/ConnectWallet'
 import { Dashboard } from './components/Dashboard'
 import { CreateStream } from './components/CreateStream'
@@ -18,11 +18,23 @@ function App() {
     setupGlobalWalletErrorHandler()
     
     // Check if user is already connected
-    const session = getUserSession()
-    if (session && session.isUserSignedIn()) {
-      setUserSession(session)
-      setIsConnected(true)
-      setUserAddress(session.loadUserData().profile.stxAddress.testnet)
+    if (stacksIsConnected()) {
+      // Load cached address from local storage
+      const dataRaw = localStorage.getItem('stacks-connect')
+      if (dataRaw) {
+        try {
+          const data = JSON.parse(dataRaw)
+          const stxAddr = data.addresses?.find((a: any) => a.address?.startsWith('ST') || a.address?.startsWith('SP'))?.address || ''
+          const session = {
+            isUserSignedIn: () => true,
+            loadUserData: () => ({ profile: { stxAddress: { testnet: stxAddr } } }),
+            signUserOut: () => { localStorage.removeItem('stacks-connect') }
+          }
+          setUserSession(session)
+          setIsConnected(true)
+          setUserAddress(stxAddr)
+        } catch {}
+      }
     }
   }, [])
 
